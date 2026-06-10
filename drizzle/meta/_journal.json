@@ -15,6 +15,20 @@
       "when": 1780921632087,
       "tag": "0001_fat_hellion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781004221700,
+      "tag": "0002_quiet_blue_shield",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1781028304916,
+      "tag": "0003_cloudy_rafael_vega",
+      "breakpoints": true
     }
   ]
 }

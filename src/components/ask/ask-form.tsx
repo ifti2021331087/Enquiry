@@ -39,11 +39,11 @@ const formSchema = z.object({
     title: z
         .string()
         .min(5, "Bug title must be at least 5 characters.")
-        .max(32, "Bug title must be at most 32 characters."),
+        .max(50, "Bug title must be at most 50 characters."),
     description: z
         .string()
         .min(10, "Description must be at least 10 characters.")
-        .max(100, "Description must be at most 100 characters."),
+        .max(500, "Description must be at most 500 characters."),
     topics: z.array(
         z.object({
             id: z.string(),
@@ -153,7 +153,7 @@ export function AskForm() {
                                         />
                                         <InputGroupAddon align="block-end">
                                             <InputGroupText className="tabular-nums">
-                                                {field.value.length}/100 characters
+                                                {field.value.length}/500 characters
                                             </InputGroupText>
                                         </InputGroupAddon>
                                     </InputGroup>

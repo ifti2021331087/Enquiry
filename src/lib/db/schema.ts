@@ -93,12 +93,25 @@ export const problem = pgTable("problem", {
     .notNull(),
 })
 
-// relations
+export const reply=pgTable("reply",{
+  id:uuid("id").defaultRandom().primaryKey(),
+  name:text("name").notNull(),
+  description:text("description"),
+  isApproved:boolean("is_approved"),
+  userId:text("user_id").references(()=>user.id,{onDelete:"cascade"}),
+  problemId:uuid("problem_id").references(()=>problem.id,{onDelete:"cascade"}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+})
 
+// relation
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   problems:many(problem),
+  replies:many(reply),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -115,9 +128,21 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const problemRelation=relations(problem,({one})=>({
+export const problemRelation=relations(problem,({one,many})=>({
   user:one(user,{
     fields:[problem.userId],
     references:[user.id]
+  }),
+  replies:many(reply)
+}))
+
+export const replyRelation=relations(reply,({one,many})=>({
+  user:one(user,{
+    fields:[reply.userId],
+    references:[user.id]
+  }),
+  problem:one(problem,{
+    fields:[reply.problemId],
+    references:[problem.id]
   })
 }))

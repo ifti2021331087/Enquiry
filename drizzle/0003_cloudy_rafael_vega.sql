@@ -1,0 +1,1 @@
+ALTER TABLE "reply" ALTER COLUMN "problem_id" SET DATA TYPE uuid;
