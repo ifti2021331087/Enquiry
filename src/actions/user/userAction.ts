@@ -3,7 +3,7 @@
 import { db } from "@/lib/db"
 import { notification, problem, reply, user } from "@/lib/db/schema"
 import { auth } from "@/lib/utils/auth"
-import { desc, eq, relations } from "drizzle-orm";
+import { arrayContains, desc, eq, relations } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers"
 
@@ -53,9 +53,13 @@ export const createProblemAction = async (data: problemProps) => {
 
 }
 
-export const getAllProblemAction = async () => {
+export const getAllProblemAction = async (topic?:string) => {
     try {
-        return await db.select().from(problem).orderBy(desc(problem.createdAt));
+        const query= db.select().from(problem);
+        if(topic){
+            query.where(arrayContains(problem.tags,[topic]));
+        }
+        return await query.orderBy(desc(problem.createdAt));
     }
     catch (e) {
         console.log(e);
@@ -201,4 +205,7 @@ export const getNotificationByUserIdAction = async (userId: string) => {
         }
     }
 }
+
+
+// feed/home page related
 
