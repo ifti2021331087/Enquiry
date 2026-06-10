@@ -1,29 +1,5 @@
 
 
-// import { getRepliesByIdAction } from '@/actions/user/userAction';
-// import { Badge } from '../ui/badge';
-
-
-// export default async function ReplyShowingCard({ problemId }: { problemId: string }) {
-
-//     const replies = await getRepliesByIdAction(problemId);
-//     console.log(replies);
-//     if (!Array.isArray(replies)) {
-//         return <div className="text-red-500 text-sm">Failed to load replies.</div>;
-//     }
-//     return (
-//         <div className='border border-blue-400 rounded-md w-full space-y-4 p-4 '>
-//             {
-//                 replies && replies.map((reply) => (
-//                     <div key={reply.reply.id}>
-//                         <Badge></Badge>
-//                     </div>
-//                 ))
-//             }
-//         </div>
-//     )
-// }
-
 import { getRepliesByIdAction } from '@/actions/user/userAction';
 import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';

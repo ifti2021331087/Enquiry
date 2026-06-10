@@ -31,11 +31,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
         <Header>
         </Header>
-        <main className="mt-16 p-4">
+        <main className="mt-12 p-4">
           {children}
           <Toaster richColors position="top-right" />
         </main>

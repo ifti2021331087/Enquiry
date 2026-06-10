@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { createReplyAction } from "@/actions/user/userAction";
 import { toast } from "sonner";
+import { reply } from "@/lib/db/schema";
 const formSchema = z.object({
     description: z.string().min(1, "Your message should have at least 1 character")
         .max(500, "your message should have at most 500 characters.")
@@ -21,9 +22,7 @@ interface problemProps{
     description: string | null;
     fileUrl: string;
     tags: string[] | null;
-    userId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    userId:string
 }
 
 
@@ -37,11 +36,13 @@ export default function ReplyProblem({problem}:{problem:problemProps}) {
     })
 
     async function onSubmit(data: replyProps) {
-        console.log(data);
+        // console.log(data);
         const replyData={
             description:data.description,
             isApproved:false,
             problemId:problem.id,
+            problemTitle:problem.title,
+            problemOwnerId:problem.userId
         }
 
         const result=await createReplyAction(replyData);

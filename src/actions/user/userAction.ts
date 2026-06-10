@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db"
-import { problem, reply, user } from "@/lib/db/schema"
+import { notification, problem, reply, user } from "@/lib/db/schema"
 import { auth } from "@/lib/utils/auth"
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, relations } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers"
 
@@ -104,9 +104,11 @@ interface replyProps {
     description: string,
     isApproved: boolean,
     problemId: string,
+    problemTitle: string;
+    problemOwnerId:string,
 }
 
-export const createReplyAction = async (data:replyProps) => {
+export const createReplyAction = async (data: replyProps) => {
     const session = await auth.api.getSession({
         headers: await headers()
     })
@@ -114,18 +116,27 @@ export const createReplyAction = async (data:replyProps) => {
     if (!session?.user) {
         throw new Error("You must be logged in to reply");
     }
-    
+
     try {
 
-        await db.insert(reply).values({
+        const [newReply] = await db.insert(reply).values({
             name: session?.user?.name,
             description: data.description,
-            isApproved:data.isApproved,
+            isApproved: data.isApproved,
             userId: session.user.id,
-            problemId:data.problemId,
+            problemId: data.problemId,
+        }).returning({ id: reply.id })
+
+        await db.insert(notification).values({
+            name: session?.user?.name|| "Anonymous",
+            problemTitle: data.problemTitle,
+            isApproved: data.isApproved,
+            userId: data.problemOwnerId,
+            problemId: data.problemId,
+            replyId: newReply.id,
         })
 
-        revalidatePath(`/problem/${problem.id}`);
+        revalidatePath(`/problem/${data.problemId}`);
 
         return {
             success: true
@@ -140,15 +151,15 @@ export const createReplyAction = async (data:replyProps) => {
     }
 }
 
-export const getRepliesByIdAction=async(problemId:string)=>{
+export const getRepliesByIdAction = async (problemId: string) => {
 
-    try{
+    try {
 
-        const result=await db.select()
-        .from(reply)
-        .leftJoin(problem,eq(reply.problemId,problem.id))
-        .leftJoin(user,eq(reply.userId,user.id))
-        .where(eq(reply.problemId,problemId));
+        const result = await db.select()
+            .from(reply)
+            .leftJoin(problem, eq(reply.problemId, problem.id))
+            .leftJoin(user, eq(reply.userId, user.id))
+            .where(eq(reply.problemId, problemId));
 
         return result;
 
@@ -156,7 +167,7 @@ export const getRepliesByIdAction=async(problemId:string)=>{
             success: true
         }
     }
-    catch(e){
+    catch (e) {
         console.log(e);
         return {
             success: false,
@@ -164,3 +175,30 @@ export const getRepliesByIdAction=async(problemId:string)=>{
         }
     }
 }
+
+export const getNotificationByUserIdAction = async (userId: string) => {
+
+    try {
+
+        const result = await db.select()
+            .from(notification)
+            .leftJoin(problem,eq(notification.problemId,problem.id))
+            .leftJoin(reply,eq(notification.replyId,reply.id))
+            .leftJoin(user, eq(reply.userId, user.id))
+            .where(eq(notification.userId, userId))
+
+        return result;
+
+        return {
+            success: true
+        }
+    }
+    catch (e) {
+        console.log(e);
+        return {
+            success: false,
+            error: "Failed to get the replies"
+        }
+    }
+}
+

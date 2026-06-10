@@ -80,7 +80,7 @@ export const verification = pgTable(
 
 export const problem = pgTable("problem", {
   id: uuid("id").defaultRandom().primaryKey(),
-  title: text("text").notNull(),
+  title: text("title").notNull(),
   description: text("description"),
   fileUrl: text("file_url").notNull(),
   tags: text("tags").array().default([]),
@@ -106,12 +106,23 @@ export const reply=pgTable("reply",{
     .notNull(),
 })
 
+export const notification=pgTable("notification",{
+  id:uuid("id").defaultRandom().primaryKey(),
+  name:text("name").notNull(),
+  problemTitle:text("problem_title").notNull(),
+  isApproved:boolean("is_approved"),
+  userId:text("user_id").references(()=>user.id,{onDelete:"cascade"}),
+  problemId:uuid("problem_id").references(()=>problem.id,{onDelete:"cascade"}),
+  replyId:uuid("reply_id").references(()=>reply.id,{onDelete:"cascade"}),
+})
+
 // relation
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   problems:many(problem),
   replies:many(reply),
+  notifications:many(notification),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -133,10 +144,11 @@ export const problemRelation=relations(problem,({one,many})=>({
     fields:[problem.userId],
     references:[user.id]
   }),
-  replies:many(reply)
+  replies:many(reply),
+  notifications:many(notification),
 }))
 
-export const replyRelation=relations(reply,({one,many})=>({
+export const replyRelation=relations(reply,({one})=>({
   user:one(user,{
     fields:[reply.userId],
     references:[user.id]
@@ -144,5 +156,21 @@ export const replyRelation=relations(reply,({one,many})=>({
   problem:one(problem,{
     fields:[reply.problemId],
     references:[problem.id]
-  })
+  }),
+  notification: one(notification)
+}))
+
+export const notificationRelation=relations(notification,({one,many})=>({
+  user:one(user,{
+    fields:[notification.userId],
+    references:[user.id]
+  }),
+  problem:one(problem,{
+    fields:[notification.problemId],
+    references:[problem.id]
+  }),
+  reply:one(reply,{
+    fields:[notification.replyId],
+    references:[reply.id]
+  }),
 }))
