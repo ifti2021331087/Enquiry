@@ -12,7 +12,6 @@ interface problemProps {
   params: Promise<{ id: string }>
 }
 
-
 export default async function problemDetails({ params }: problemProps) {
   const resolveId = await params;
   const problemId = resolveId.id;
