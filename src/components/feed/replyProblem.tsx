@@ -58,7 +58,7 @@ export default function ReplyProblem({problem}:{problem:problemProps}) {
     }
 
     return (
-        <div className="border border-blue-400 rounded-md w-full space-y-4 p-4 ">
+        <div className="rounded-md w-full space-y-4 p-4 ">
             <form id="form-rhf-textarea" onSubmit={form.handleSubmit(onSubmit)}>
                 <FieldGroup>
                     <Controller

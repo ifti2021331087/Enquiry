@@ -21,8 +21,8 @@ export default async function Home({searchParams}: homeProps) {
   ];
 
   return (
-    <div className="flex bg-zinc-50 font-sans dark:bg-black min-h-screen">
-      <section className="basis-1/6 flex flex-col mt-8 px-4 gap-y-2">
+    <div className="flex bg-zinc-50 font-sans dark:bg-black min-h-screen relative">
+      <section className="basis-1/6 sticky top-24 self-start flex flex-col mt-8 px-4 gap-y-2">
         <Label className="py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
           Browse
         </Label>

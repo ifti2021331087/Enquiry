@@ -30,7 +30,7 @@ export default async function ProblemDetails({ problem }: { problem: props }) {
     }).format(new Date(problem.createdAt))
     
     return (
-        <div className="flex w-full flex-wrap justify-start gap-2  border border-blue-500 rounded-md p-4">
+        <div className="flex w-full flex-wrap justify-start gap-2 rounded-md p-4">
             {
                 problem.tags && (
                     problem.tags.map((tag) => (

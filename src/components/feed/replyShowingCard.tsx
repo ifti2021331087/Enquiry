@@ -43,7 +43,7 @@ export default async function ReplyShowingCard({ problemId }: { problemId: strin
     }
 
     return (
-        <div className='border border-blue-400 rounded-md w-full space-y-6 p-6'>
+        <div className='rounded-md w-full space-y-6 p-6'>
             <Label>{replies.length} replies</Label>
             {replies.map((row) => {
                 // Assuming Drizzle is nesting your data under 'reply' because of joins

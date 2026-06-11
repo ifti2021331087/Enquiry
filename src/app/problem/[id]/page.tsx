@@ -22,16 +22,25 @@ export default async function problemDetails({ params }: problemProps) {
   return (
     <div className="flex justify-between">
       <section className="max-w-xl">
-         <Button asChild>
-            <Link href={"/"}>Back to feed</Link>
-         </Button>
+         <div className="sticky top-24 lg:top-32">
+             <Button 
+               variant="ghost" 
+               className="group text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white pl-0 transition-colors duration-200 text-sm font-medium" 
+               asChild
+             >
+                <Link href={"/"}>
+                  <span className="mr-2 transition-transform duration-200 group-hover:-translate-x-1">&larr;</span> 
+                  Back to feed
+                </Link>
+             </Button>
+          </div>
       </section>
-      <section className="max-w-4xl mx-auto flex flex-col justify-center items-center gap-4">
+      <section className="max-w-4xl mx-auto flex flex-col justify-center items-center gap-4 mt-5 border-l border-r">
         <ProblemDetails problem={problem}></ProblemDetails>
         <ReplyShowingCard problemId={problem.id}></ReplyShowingCard>
         <ReplyProblem problem={problem}></ReplyProblem>
       </section>
-      <section className="max-w-xl ">
+      <section className="max-w-xl mt-5 ">
           <div>
             Author Section
           </div>

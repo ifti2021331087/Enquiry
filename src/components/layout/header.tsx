@@ -6,15 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 import UserMenu from "../auth/user-menu";
+import { useSession } from "@/lib/auth-client";
 
 export default function Header() {
-    const pathName=usePathname();
-    const isAuthPage:boolean=(pathName==="/auth/signIn")||(pathName==="/auth/signUp");
-    if(isAuthPage)return null
+    const { data: session, isPending } = useSession()
+    const user = session?.user;
+    const isAdmin = user?.role === 'admin';
+    const pathName = usePathname();
+    const isAuthPage: boolean = (pathName === "/auth/signIn") || (pathName === "/auth/signUp");
+    if (isAuthPage) return null
     return (
         <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white">
             <div className="container mx-auto h-16 flex items-center justify-between px-4">
-                
+
                 {/* Left Side: Logo */}
                 <div className="flex items-center gap-2">
                     <Link href={"/"} className="flex gap-2 items-center">
@@ -29,23 +33,47 @@ export default function Header() {
 
                 {/* Center: Desktop Navigation Links (Hidden on Mobile) */}
                 <nav className="hidden md:flex items-center gap-6">
-                    <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                        Feed
-                    </Link>
-                    <Link href={"/ask"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                        Ask
-                    </Link>
-                    <Link href={"/profile"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                        Profile
-                    </Link>
-                    <Link href={"/notifications"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                        Notifications
-                    </Link>
+                    {
+                        !isPending && !isAdmin && (
+                            <>
+                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Feed
+                                </Link>
+                                <Link href={"/ask"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Ask
+                                </Link>
+                                <Link href={"/profile"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Profile
+                                </Link>
+                                <Link href={"/notifications"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Notifications
+                                </Link>
+                            </>
+                        )
+                    }
+                    {
+                        !isPending && isAdmin && (
+                            <>
+                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Home
+                                </Link>
+                                <Link href={"/admin/dashboard"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Dashboard
+                                </Link>
+                                <Link href={"/admin/post"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Posts
+                                </Link>
+                                <Link href={"/admin/user"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                    Users
+                                </Link>
+                            </>
+                        )
+                    }
                 </nav>
 
                 {/* Right Side: Profile Dropdown (Desktop) & Hamburger Menu (Mobile) */}
                 <div className="flex items-center gap-2">
-                    
+
                     {/* Profile Dropdown */}
                     <UserMenu></UserMenu>
 
@@ -66,18 +94,42 @@ export default function Header() {
                                     </SheetTitle>
                                 </SheetHeader>
                                 <nav className="flex flex-col gap-4 mt-6">
-                                    <Link href={"/"} className="block text-base font-medium py-2 px-3 rounded-md hover:bg-slate-100 transition-colors">
-                                        Feed
-                                    </Link>
-                                    <Link href={"/ask"} className="block text-base font-medium py-2 px-3 rounded-md hover:bg-slate-100 transition-colors">
-                                        Ask
-                                    </Link>
-                                    <Link href={"/profile"} className="block text-base font-medium py-2 px-3 rounded-md hover:bg-slate-100 transition-colors">
-                                        Profile
-                                    </Link>
-                                    <Link href={"/notifications"} className="block text-base font-medium py-2 px-3 rounded-md hover:bg-slate-100 transition-colors">
-                                        Notifications
-                                    </Link>
+                                    {
+                                        !isPending && !isAdmin && (
+                                            <>
+                                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Feed
+                                                </Link>
+                                                <Link href={"/ask"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Ask
+                                                </Link>
+                                                <Link href={"/profile"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Profile
+                                                </Link>
+                                                <Link href={"/notifications"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Notifications
+                                                </Link>
+                                            </>
+                                        )
+                                    }
+                                    {
+                                        !isPending && isAdmin && (
+                                            <>
+                                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Home
+                                                </Link>
+                                                <Link href={"/admin/dashboard"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Dashboard
+                                                </Link>
+                                                <Link href={"/admin/post"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Posts
+                                                </Link>
+                                                <Link href={"/admin/user"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                                    Users
+                                                </Link>
+                                            </>
+                                        )
+                                    }
                                 </nav>
                             </SheetContent>
                         </Sheet>
