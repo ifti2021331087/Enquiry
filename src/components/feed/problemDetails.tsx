@@ -12,6 +12,7 @@ interface props {
     fileUrl: string;
     tags: string[] | null;
     userId: string;
+    authorName:string|null,
     createdAt: Date;
     updatedAt: Date;
 }
@@ -20,7 +21,7 @@ export default async function ProblemDetails({ problem }: { problem: props }) {
     const session = await auth.api.getSession({
         headers: await headers()
     })
-    const fullName = session?.user?.name || "";
+    const fullName = problem.authorName || "";
     const nameParts = fullName.trim().split(" ");
     const surname = nameParts.length > 1 ? nameParts.pop() : nameParts[0];
     const formatedDate = new Intl.DateTimeFormat("en-US", {

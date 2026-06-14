@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { problem, reply, user } from "@/lib/db/schema";
+import { notification, problem, reply, session, user } from "@/lib/db/schema";
 import { auth } from "@/lib/utils/auth";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, ne, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -27,6 +27,8 @@ export const getAllUserAction=async()=>{
         return []
     }
 }
+
+// post-related-actions
 
 export const getAdminProblemsAction=async()=>{
     const session=await auth.api.getSession({
@@ -84,6 +86,8 @@ export const deleteProblemByIdAction=async(problemId:string)=>{
     }
 }
 
+// user-related-actions
+
 export const getAdminUsersAction=async()=>{
     const session=await auth.api.getSession({
         headers:await headers()
@@ -104,6 +108,7 @@ export const getAdminUsersAction=async()=>{
         })   
         .from(user)
         .leftJoin(problem,eq(problem.userId,user.id))
+        .where(ne(user.role,'admin'))
         .groupBy(user.id).orderBy(desc(user.createdAt))
 
         return result;
@@ -113,4 +118,83 @@ export const getAdminUsersAction=async()=>{
         return []
     }
 
+}
+
+export const banUserByIdAction=async(targetUserId:string)=>{
+    const userSession=await auth.api.getSession({
+        headers:await headers()
+    })
+
+    if(!userSession?.user.id && userSession?.user.role==='admin'){
+        throw new Error("You must be logged in and admin to ban a user");
+    }
+
+    try{
+        await db.update(user).set({banned:true}).where(eq(user.id,targetUserId));
+        await db.delete(session).where(eq(session.userId,targetUserId));
+        revalidatePath("/admin/user")
+        return{
+            success:true,
+        }
+    }
+    catch(e){
+        console.log(e);
+        return {
+            success: false
+        }
+    }
+}
+
+export const unBanUserByIdAction=async(targetUserId:string)=>{
+    const userSession=await auth.api.getSession({
+        headers:await headers()
+    })
+
+    if(!userSession?.user.id && userSession?.user.role==='admin'){
+        throw new Error("You must be logged in and admin to unban a user");
+    }
+
+     try{
+        await db.update(user).set({
+            banned:false,
+            banReason:null,
+            banExpires:null,
+        }).where(eq(user.id,targetUserId));
+
+        revalidatePath("/admin/user")
+        return{
+            success:true,
+        }
+    }
+    catch(e){
+        console.log(e);
+        return {
+            success: false
+        }
+    }
+}
+
+export const deleteUserByIdAction=async(userId:string)=>{
+    const userSession=await auth.api.getSession({
+        headers:await headers()
+    })
+
+    if(!userSession?.user.id && userSession?.user.role==='admin'){
+        throw new Error("You must be logged in and admin to delete a user");
+    }
+
+    try{
+        await db.delete(user).where(eq(user.id,userId));
+
+        revalidatePath("/admin/user");
+        return{
+            success:true
+        }
+    }
+    catch(e){
+        console.log(e);
+        return{
+            success:false
+        }
+    }
 }

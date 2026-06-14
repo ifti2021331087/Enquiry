@@ -17,7 +17,7 @@ export default async function problemDetails({ params }: problemProps) {
   const problemId = resolveId.id;
   const problems = await getProblemByIdAction(problemId)
   const problem = problems[0];
-
+  console.log(problems);
   return (
     <div className="flex justify-between">
       <section className="max-w-xl">
@@ -36,8 +36,8 @@ export default async function problemDetails({ params }: problemProps) {
       </section>
       <section className="max-w-4xl mx-auto flex flex-col justify-center items-center gap-4 mt-5 border-l border-r">
         <ProblemDetails problem={problem}></ProblemDetails>
-        <ReplyShowingCard problemId={problem.id}></ReplyShowingCard>
         <ReplyProblem problem={problem}></ReplyProblem>
+        <ReplyShowingCard problemId={problem.id}></ReplyShowingCard>
       </section>
       <section className="max-w-xl mt-5 ">
           <div>

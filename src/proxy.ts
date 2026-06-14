@@ -26,6 +26,7 @@ export const config = {
   matcher: [
     '/ask/:path*',
     '/notifications/:path*',
-    '/profile/:path*'
+    '/profile/:path*',
+    '/admin/:path*'
   ],
 };

@@ -36,6 +36,13 @@
       "when": 1781081390653,
       "tag": "0004_nifty_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781346330569,
+      "tag": "0005_bent_morlocks",
+      "breakpoints": true
     }
   ]
 }

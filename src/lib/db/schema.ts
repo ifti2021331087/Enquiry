@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, uuid, primaryKey } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -78,6 +78,8 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+// problem-related-schema
+
 export const problem = pgTable("problem", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
@@ -93,36 +95,48 @@ export const problem = pgTable("problem", {
     .notNull(),
 })
 
-export const reply=pgTable("reply",{
-  id:uuid("id").defaultRandom().primaryKey(),
-  name:text("name").notNull(),
-  description:text("description"),
-  isApproved:boolean("is_approved"),
-  userId:text("user_id").references(()=>user.id,{onDelete:"cascade"}),
-  problemId:uuid("problem_id").references(()=>problem.id,{onDelete:"cascade"}),
+export const problemLike = pgTable("problem_like", {
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  problemId: uuid("problem_id").notNull().references(() => problem.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+},
+  (table) => [
+    primaryKey({ columns: [table.userId, table.problemId] })
+  ]
+)
+
+export const reply = pgTable("reply", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  isApproved: boolean("is_approved"),
+  userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+  problemId: uuid("problem_id").references(() => problem.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 })
 
-export const notification=pgTable("notification",{
-  id:uuid("id").defaultRandom().primaryKey(),
-  name:text("name").notNull(),
-  problemTitle:text("problem_title").notNull(),
-  isApproved:boolean("is_approved"),
-  userId:text("user_id").references(()=>user.id,{onDelete:"cascade"}),
-  problemId:uuid("problem_id").references(()=>problem.id,{onDelete:"cascade"}),
-  replyId:uuid("reply_id").references(()=>reply.id,{onDelete:"cascade"}),
+export const notification = pgTable("notification", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  problemTitle: text("problem_title").notNull(),
+  isApproved: boolean("is_approved"),
+  userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+  problemId: uuid("problem_id").references(() => problem.id, { onDelete: "cascade" }),
+  replyId: uuid("reply_id").references(() => reply.id, { onDelete: "cascade" }),
 })
 
-// relation
+// relations
+// account-related
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
-  problems:many(problem),
-  replies:many(reply),
-  notifications:many(notification),
+  problems: many(problem),
+  replies: many(reply),
+  notifications: many(notification),
+  likes: many(problemLike)
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -138,39 +152,52 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
-
-export const problemRelation=relations(problem,({one,many})=>({
-  user:one(user,{
-    fields:[problem.userId],
-    references:[user.id]
+// problem-related
+export const problemRelation = relations(problem, ({ one, many }) => ({
+  user: one(user, {
+    fields: [problem.userId],
+    references: [user.id]
   }),
-  replies:many(reply),
-  notifications:many(notification),
+  replies: many(reply),
+  notifications: many(notification),
+  likes: many(problemLike),
 }))
 
-export const replyRelation=relations(reply,({one})=>({
-  user:one(user,{
-    fields:[reply.userId],
-    references:[user.id]
+export const replyRelation = relations(reply, ({ one }) => ({
+  user: one(user, {
+    fields: [reply.userId],
+    references: [user.id]
   }),
-  problem:one(problem,{
-    fields:[reply.problemId],
-    references:[problem.id]
+  problem: one(problem, {
+    fields: [reply.problemId],
+    references: [problem.id]
   }),
   notification: one(notification)
 }))
 
-export const notificationRelation=relations(notification,({one,many})=>({
-  user:one(user,{
-    fields:[notification.userId],
-    references:[user.id]
+export const notificationRelation = relations(notification, ({ one, many }) => ({
+  user: one(user, {
+    fields: [notification.userId],
+    references: [user.id]
   }),
+  problem: one(problem, {
+    fields: [notification.problemId],
+    references: [problem.id]
+  }),
+  reply: one(reply, {
+    fields: [notification.replyId],
+    references: [reply.id]
+  }),
+}))
+
+export const problemLikeRelation = relations(problemLike, ({ one, many }) => ({
+  user: one(user, {
+    fields: [problemLike.userId],
+    references: [user.id]
+  }
+  ),
   problem:one(problem,{
-    fields:[notification.problemId],
+    fields:[problemLike.problemId],
     references:[problem.id]
-  }),
-  reply:one(reply,{
-    fields:[notification.replyId],
-    references:[reply.id]
-  }),
+  })
 }))

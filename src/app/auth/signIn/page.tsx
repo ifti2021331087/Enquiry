@@ -6,7 +6,6 @@ export default function SignIn() {
   return (
     <div className="flex justify-center mt-10">
       <SignInForm></SignInForm>
-      <Toaster richColors position="top-center" />
     </div>
   )
 }
