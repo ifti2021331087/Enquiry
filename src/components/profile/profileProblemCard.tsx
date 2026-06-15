@@ -1,53 +1,17 @@
-import { auth } from "@/lib/utils/auth";
-import { Badge } from "../ui/badge";
-import { headers } from "next/headers";
-import Link from "next/link";
-import { getHasUserLikedProblem, getProblemLikeCountById, getRepliesByIdAction } from "@/actions/user/userAction";
-import { MessageCircleReply } from "lucide-react";
-import { Button } from "../ui/button";
-import LikeButton from "./likeButton";
 
-interface problemProps {
-    id: string;
-    title: string;
-    description: string | null;
-    fileUrl: string;
-    tags: string[] | null;
-    userId: string,
-    authorName: string | null,
-    createdAt: Date;
-    updatedAt: Date;
-}
 
-export default async function ProblemCard({ problem }: { problem: problemProps }) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    })
 
-    const tags = problem.tags;
-    // Set a fallback name like "Anonymous" if authorName is null
-    const fullName = problem.authorName || "Anonymous";
-    const nameParts = fullName.trim().split(" ");
-    const surname = nameParts.length > 1 ? nameParts.pop() : nameParts[0];
 
-    const formatedDate = new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric", // Added day for clearer formatting
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit" // Added minutes
-    }).format(new Date(problem.createdAt));
+import React from 'react'
+import { Badge } from '../ui/badge'
+import Link from 'next/link'
+import { Button } from '../ui/button'
+import { MessageCircleReply } from 'lucide-react'
+import LikeButton from '../feed/likeButton'
 
-    const totalLikes = await getProblemLikeCountById(problem.id);
-    const hasLiked = await getHasUserLikedProblem(problem.id);
-    const replies = await getRepliesByIdAction(problem.id);
-
-    let replyLength = 0;
-    if (Array.isArray(replies)) replyLength = replies.length;
-    else replyLength = 0;
-
-    return (
-        <div className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col gap-4">
+export default function ProfileProblemCard() {
+  return (
+    <div className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col gap-4">
             
             {/* Top Row: Tags */}
             <div className="flex w-full flex-wrap justify-start gap-2">
@@ -73,9 +37,6 @@ export default async function ProblemCard({ problem }: { problem: problemProps }
                         {problem.title}
                     </h1>
                 </Link>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed line-clamp-2">
-                    {problem.description}
-                </p>
             </div>
 
             {/* Bottom Row: User Info and Actions */}
@@ -99,7 +60,7 @@ export default async function ProblemCard({ problem }: { problem: problemProps }
 
                 {/* Actions (Replies & Likes) */}
                 <div className="flex items-center gap-2">
-                    <Button 
+                    <Button
                         variant="ghost" 
                         size="sm"
                         className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 h-9 px-3 border border-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -110,7 +71,7 @@ export default async function ProblemCard({ problem }: { problem: problemProps }
                     </Button>
                     
                     {/* Make sure your LikeButton component accepts a className prop or is styled similarly inside its own file */}
-                    <LikeButton 
+                    <LikeButton
                         problemId={problem.id} 
                         initialLikes={totalLikes} 
                         hasLiked={hasLiked} 
@@ -118,5 +79,5 @@ export default async function ProblemCard({ problem }: { problem: problemProps }
                 </div>
             </div>
         </div>
-    )
+  )
 }

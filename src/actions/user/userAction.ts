@@ -3,7 +3,7 @@
 import { db } from "@/lib/db"
 import { notification, problem, problemLike, reply, user } from "@/lib/db/schema"
 import { auth } from "@/lib/utils/auth"
-import { and, arrayContains, count, desc, eq, relations } from "drizzle-orm";
+import { and, arrayContains, count, desc, eq, exists, notExists, relations, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers"
 
@@ -53,7 +53,13 @@ export const createProblemAction = async (data: problemProps) => {
 
 }
 
-export const getAllProblemAction = async (topic?: string) => {
+type FilterParams = {
+    topic?: string,
+    sortBy?: "recent" | "trending",
+    solved?: true | false
+}
+
+export const getAllProblemAction = async (filters: FilterParams) => {
     try {
         const query = db.select({
             id: problem.id,
@@ -62,19 +68,41 @@ export const getAllProblemAction = async (topic?: string) => {
             fileUrl: problem.fileUrl,
             tags: problem.tags,
             userId: problem.userId,
-            authorName: user.name, // Grab the user's name here
+            authorName: user.name,
             createdAt: problem.createdAt,
-            updatedAt: problem.updatedAt
+            updatedAt: problem.updatedAt,
+            likeCount: count(problemLike.userId)
         })
-        .from(problem)
-        // Join the user table to match the author with the problem
-        .leftJoin(user, eq(problem.userId, user.id)); 
+            .from(problem)
+            // Join the user table to match the author with the problem
+            .leftJoin(user, eq(problem.userId, user.id))
+            .leftJoin(problemLike, eq(problemLike.problemId, problem.id))
+            .groupBy(problem.id, user.id)
 
-        if (topic) {
-            query.where(arrayContains(problem.tags, [topic]));
+
+        const conditions = [];
+        if (filters.topic) {
+            const topicArray = filters.topic.split(",");
+            conditions.push(arrayContains(problem.tags, topicArray));
         }
-        
-        return await query.orderBy(desc(problem.createdAt));
+        if (filters.solved == true) {
+            conditions.push(
+                exists(db.select().from(reply).where(and(eq(reply.problemId, problem.id), eq(reply.isApproved, filters.solved))))
+            )
+        } else if (filters.solved == false) {
+            conditions.push(
+                notExists(db.select().from(reply).where(and(eq(reply.problemId, problem.id), eq(reply.isApproved, filters.solved))))
+            )
+        }
+        if (conditions.length > 0) {
+            query.where(and(...conditions))
+        }
+        if (filters.sortBy === "trending") {
+            query.orderBy(desc(count(problemLike.userId)), desc(problem.createdAt));
+        }
+        else query.orderBy(desc(problem.createdAt));
+
+        return await query;
     }
     catch (e) {
         console.log(e);
@@ -99,13 +127,13 @@ export const getProblemByIdAction = async (problemId: string) => {
             fileUrl: problem.fileUrl,
             tags: problem.tags,
             userId: problem.userId,
-            authorName:user.name,
+            authorName: user.name,
             createdAt: problem.createdAt,
             updatedAt: problem.updatedAt
         })
-        .from(problem)
-        .leftJoin(user,eq(problem.userId,user.id))
-        .where(eq(problem.id, problemId)).limit(1);
+            .from(problem)
+            .leftJoin(user, eq(problem.userId, user.id))
+            .where(eq(problem.id, problemId)).limit(1);
     }
     catch (e) {
         console.log(e);
@@ -279,6 +307,81 @@ export const getRepliesByIdAction = async (problemId: string) => {
     }
 }
 
+export const isReplyApproved = async (replyId: string) => {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if (!session?.user) {
+        return false;
+    }
+    try {
+        const result = await db.select()
+            .from(reply)
+            .leftJoin(user, eq(reply.userId, user.id))
+            .leftJoin(problem, eq(reply.problemId, problem.id))
+            .where(eq(reply.id, replyId)).limit(1);
+
+        return result[0].reply.isApproved;
+    }
+    catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
+export const updataReplyApproveActionById = async (replyId: string) => {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+
+    if (!session?.user) {
+        return { success: false, error: "You must be logged in." };
+    }
+    try {
+        const result = await db.select()
+            .from(reply)
+            .leftJoin(user, eq(reply.userId, user.id))
+            .leftJoin(problem, eq(reply.problemId, problem.id))
+            .where(eq(reply.id, replyId)).limit(1);
+
+        if (result.length === 0) {
+            return { success: false, error: "Reply not found" };
+        }
+        const is_approved = result[0].reply.isApproved;
+        const fetchedProblem = result[0].problem;
+
+        if (fetchedProblem?.userId !== session.user.id) {
+            return { success: false, error: "Only the problem author can approve replies." };
+        }
+
+        if (is_approved) {
+            await db.update(reply)
+                .set({
+                    isApproved: false
+                })
+                .where(eq(reply.id, replyId))
+        }
+        else {
+            await db.update(reply)
+                .set({
+                    isApproved: true
+                })
+                .where(eq(reply.id, replyId))
+        }
+
+        return {
+            success: true
+        }
+    }
+    catch (e) {
+        console.log(e);
+        return {
+            success: false
+        }
+    }
+}
+
 export const getNotificationByUserIdAction = async (userId: string) => {
 
     try {
@@ -306,5 +409,118 @@ export const getNotificationByUserIdAction = async (userId: string) => {
 }
 
 
-// feed/home page related
+
+// profile-related
+
+export const getProfileDataAction = async (targetUserId: string) => {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+
+    if (!session?.user) {
+        return { success: false, error: "You must be logged in to view profiles." };
+    }
+
+    try {
+        const profileUser = await db.query.user.findFirst({
+            where: eq(user.id, targetUserId),
+            columns: {
+                id: true,
+                name: true,
+                image: true,
+                role: true,
+                createdAt: true,
+            }
+        });
+
+        if (!profileUser) {
+            return { success: false, error: "User not found." };
+        }
+
+        const [
+            [problemsStat],
+            [repliesStat],
+            [solvedStat],
+            userProblems,
+            userReplies 
+        ] = await Promise.all([
+            db.select({ value: count() }).from(problem).where(eq(problem.userId, targetUserId)),
+
+            db.select({ value: count() }).from(reply).where(eq(reply.userId, targetUserId)),
+
+            db.select({ value: count() })
+              .from(reply)
+              .where(and(eq(reply.userId, targetUserId), eq(reply.isApproved, true))),
+
+            db.query.problem.findMany({
+                where: eq(problem.userId, targetUserId),
+                orderBy: (problems, { desc }) => [desc(problems.createdAt)],
+
+                with: {
+                    replies: {
+                        columns: { isApproved: true }
+                    }
+                }
+            }),
+
+            db.query.reply.findMany({
+                where: eq(reply.userId, targetUserId),
+                orderBy: (replies, { desc }) => [desc(replies.createdAt)],
+
+                with: {
+                    problem: {
+                        columns: {
+                            id: true,
+                            title: true,
+                            tags: true
+                        }
+                    }
+                }
+            })
+        ]);
+
+        return {
+            success: true,
+            data: {
+                user: profileUser,
+                stats: {
+                    problemsCount: problemsStat.value,
+                    repliesCount: repliesStat.value,
+                    solvedCount: solvedStat.value,
+                    reputation: (solvedStat.value * 15) + (repliesStat.value * 2) 
+                },
+
+                problems: userProblems.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    description: p.description,
+                    tags: p.tags,
+                    createdAt: p.createdAt,
+                    replyCount: p.replies.length,
+                    isSolved: p.replies.some(r => r.isApproved)
+                })),
+
+                replies: userReplies.map(r => ({
+                    id: r.id,
+                    description: r.description,
+                    isApproved: r.isApproved,
+                    createdAt: r.createdAt,
+
+                    parentProblem: r.problem ? {
+                        id: r.problem.id,
+                        title: r.problem.title,
+                        tags: r.problem.tags
+                    } : null
+                }))
+            }
+        };
+
+    } catch (error) {
+        console.error("Profile fetch error:", error);
+        return {
+            success: false,
+            error: "Failed to load profile data."
+        };
+    }
+}
 

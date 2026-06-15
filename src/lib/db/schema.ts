@@ -109,7 +109,7 @@ export const reply = pgTable("reply", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
-  isApproved: boolean("is_approved"),
+  isApproved: boolean("is_approved").notNull(),
   userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
   problemId: uuid("problem_id").references(() => problem.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -128,7 +128,7 @@ export const notification = pgTable("notification", {
   replyId: uuid("reply_id").references(() => reply.id, { onDelete: "cascade" }),
 })
 
-// relations
+// relations for all tables
 // account-related
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),

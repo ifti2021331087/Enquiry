@@ -43,6 +43,13 @@
       "when": 1781346330569,
       "tag": "0005_bent_morlocks",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781422109605,
+      "tag": "0006_black_sinister_six",
+      "breakpoints": true
     }
   ]
 }
