@@ -4,18 +4,18 @@ import Link from "next/link";
 import { LayoutDashboard, StickyNotePlus, TrendingUp, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllProblemAction } from "@/actions/user/userAction";
-import { getAllUserAction } from "@/actions/admin/adminAction";
+import { getAdminAllProblemsAction, getAllUserAction } from "@/actions/admin/adminAction";
 
 
 
 export default async function AdminDashboard() {
-    const posts = await getAllProblemAction();
+    const posts = await getAdminAllProblemsAction();
     const users = await getAllUserAction();
-;    if(!users){
+;    if(!users || !posts){
         return(
             <div>
                 <p>
-                    No users yet
+                    No users and posts yet
                 </p>
             </div>
         )
@@ -34,7 +34,7 @@ export default async function AdminDashboard() {
 
                         {/* 4. Large, bold primary metric */}
                         <div className="mt-3 text-4xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-                            {posts.length}
+                            {posts.totalPosts}
                         </div>
                     </div>
                     <div

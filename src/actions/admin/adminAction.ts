@@ -3,11 +3,26 @@
 import { db } from "@/lib/db";
 import { notification, problem, reply, session, user } from "@/lib/db/schema";
 import { auth } from "@/lib/utils/auth";
-import { desc, eq, ne, sql } from "drizzle-orm";
+import { desc, eq, ne, sql,count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 
+export const getAdminAllProblemsAction=async()=>{
+
+    try{
+        const result=await db.select({value:count()}).from(problem)
+
+        return {
+            success:true,
+            totalPosts:result[0].value
+        }
+    }
+    catch(e){
+        console.log(e);
+        return 0;
+    }
+}
 export const getAllUserAction=async()=>{
     const session=await auth.api.getSession({
         headers:await headers()
