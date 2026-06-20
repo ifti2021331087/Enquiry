@@ -4,8 +4,9 @@ import "./globals.css";
 import Header from "@/components/layout/header";
 import { cn } from "@/lib/utils/utils";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/provider/theme-provider";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,12 +35,18 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <Header>
-        </Header>
-        <main className="mt-12 p-4">
-          {children}
-          <Toaster richColors position="top-right" />
-        </main>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header></Header>
+          <main className="mt-12 p-4">
+            {children}
+            <Toaster richColors position="top-right" />
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

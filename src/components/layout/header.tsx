@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { usePathname } from "next/navigation";
 import UserMenu from "../auth/user-menu";
 import { useSession } from "@/lib/auth-client";
+import { ModeToggle } from "../theme/toggle-theme";
 
 export default function Header() {
     const { data: session, isPending } = useSession()
@@ -16,7 +17,7 @@ export default function Header() {
     const isAuthPage: boolean = (pathName === "/auth/signIn") || (pathName === "/auth/signUp");
     if (isAuthPage) return null
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white">
+        <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background">
             <div className="container mx-auto h-16 flex items-center justify-between px-4">
 
                 {/* Left Side: Logo */}
@@ -72,8 +73,9 @@ export default function Header() {
                 </nav>
 
                 {/* Right Side: Profile Dropdown (Desktop) & Hamburger Menu (Mobile) */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
 
+                    <ModeToggle></ModeToggle>
                     {/* Profile Dropdown */}
                     <UserMenu></UserMenu>
 
