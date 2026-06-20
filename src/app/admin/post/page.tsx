@@ -86,6 +86,7 @@ import {
 } from "@/components/ui/table"
 import { getAdminProblemsAction } from "@/actions/admin/adminAction"
 import PostActionsDropdown from "@/components/admin/postActionDropdown"
+import { FileText, SearchX } from "lucide-react"
 
 export default async function AdminPostList() {
   const problems = await getAdminProblemsAction();
@@ -95,54 +96,83 @@ export default async function AdminPostList() {
     day: "numeric", 
     year: "numeric",
   });
+
+  if (!problems || problems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-20 w-full border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl bg-white/50 dark:bg-zinc-900/20 shadow-sm">
+        <div className="bg-zinc-100 dark:bg-zinc-800/50 p-4 rounded-full mb-4">
+          <SearchX className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">No posts found</h3>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2 max-w-xs">
+          There are currently no problems submitted by users.
+        </p>
+      </div>
+    );
+  }
   
   return (
-    <div className="w-full mx-auto rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
-      <Table className="w-full">
-        <TableHeader className="bg-zinc-50/50 dark:bg-zinc-900/20">
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Post</TableHead>
-            <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Author</TableHead>
-            <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Replies</TableHead>
-            <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Posted</TableHead>
-            <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {problems &&
-            problems.map((problem) => {
-              const formattedDate = problem.posted 
-                ? dateFormatter.format(new Date(problem.posted)) 
-                : "N/A";
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* Page Header */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+          <FileText className="w-6 h-6 text-blue-600 dark:text-blue-500" />
+          Manage Posts
+        </h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          View and moderate all user-submitted problems across the platform.
+        </p>
+      </div>
 
-              return (
-                <TableRow 
-                  key={problem.id} 
-                  className="transition-colors hover:bg-zinc-50/80 dark:hover:bg-zinc-900/50"
-                >
-                  <TableCell className="font-medium text-zinc-900 dark:text-zinc-100 py-4">
-                    {problem.title}
-                  </TableCell>
-                  <TableCell className="text-zinc-600 dark:text-zinc-400">
-                    {problem.author || "Unknown"}
-                  </TableCell>     
-                  <TableCell>
-                    <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
-                      {problem.replies}
-                    </span>
-                  </TableCell>        
-                  <TableCell className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {formattedDate}
-                  </TableCell> 
-                  
-                  <TableCell className="text-right">
-                    <PostActionsDropdown problemId={problem.id}></PostActionsDropdown>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
+      {/* Table Card */}
+      <div className="w-full rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table className="w-full text-sm">
+            <TableHeader className="bg-zinc-50/80 dark:bg-zinc-900/40 border-b border-zinc-200 dark:border-zinc-800">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Post Title</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Author</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-center">Replies</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Posted</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {problems.map((problem) => {
+                const formattedDate = problem.posted 
+                  ? dateFormatter.format(new Date(problem.posted)) 
+                  : "N/A";
+
+                return (
+                  <TableRow 
+                    key={problem.id} 
+                    className="transition-colors hover:bg-blue-50/50 dark:hover:bg-blue-900/10 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0"
+                  >
+                    <TableCell className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-100 max-w-[200px] sm:max-w-[300px] lg:max-w-[400px] truncate">
+                      {problem.title}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-zinc-600 dark:text-zinc-400 font-medium whitespace-nowrap">
+                      {problem.author || "Unknown"}
+                    </TableCell>     
+                    <TableCell className="px-6 py-4 text-center">
+                      <span className="inline-flex items-center justify-center min-w-[2rem] rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                        {problem.replies}
+                      </span>
+                    </TableCell>        
+                    <TableCell className="px-6 py-4 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                      {formattedDate}
+                    </TableCell> 
+                    <TableCell className="px-6 py-4 text-right whitespace-nowrap">
+                      <PostActionsDropdown problemId={problem.id}></PostActionsDropdown>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   )
 }

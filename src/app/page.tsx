@@ -2,7 +2,7 @@ import { getAllProblemAction } from "@/actions/user/userAction";
 import ProblemCard from "@/components/feed/problemCard";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { CheckSquare, Plus, Square, SearchX, Filter, ChevronDown } from "lucide-react";
+import { CheckSquare, Plus, Square, SearchX, Filter, ChevronDown, Users } from "lucide-react";
 import Link from "next/link";
 
 interface homeProps {
@@ -59,7 +59,6 @@ export default async function Home({ searchParams }: homeProps) {
     { name: "TypeScript", slug: "typescript", count: 142 },
   ];
 
-  // Extracted filter logic so we can reuse it for Mobile Dropdown & Desktop Sidebar
   const FilterContent = (
     <div className="flex flex-col gap-8">
       {/* Browse Section */}
@@ -138,13 +137,12 @@ export default async function Home({ searchParams }: homeProps) {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-blue-200 dark:selection:bg-blue-900">
       
-      {/* Main Layout Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 flex flex-col lg:flex-row gap-6 lg:gap-12 relative">
+      {/* Main Layout Container - Increased width to max-w-[1400px] */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 flex flex-col lg:flex-row gap-6 lg:gap-8 relative">
         
-        {/* Sidebar Space */}
-        <aside className="w-full lg:w-64 flex-shrink-0 lg:sticky lg:top-24 lg:self-start flex flex-col gap-y-6 z-20">
+        {/* Left Sidebar (Filters) */}
+        <aside className="w-full lg:w-56 xl:w-60 flex-shrink-0 lg:sticky lg:top-24 lg:self-start flex flex-col gap-y-6 z-20">
           
-          {/* Mobile Filter Toggle Button (Hidden on Desktop) */}
           <details className="group lg:hidden relative">
             <summary className="flex items-center justify-between gap-2 cursor-pointer list-none bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-5 py-3 rounded-xl w-full font-semibold text-sm text-zinc-800 dark:text-zinc-200 shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors [&::-webkit-details-marker]:hidden">
               <div className="flex items-center gap-2">
@@ -153,14 +151,11 @@ export default async function Home({ searchParams }: homeProps) {
               </div>
               <ChevronDown className="w-4 h-4 text-zinc-400 group-open:rotate-180 transition-transform duration-300" />
             </summary>
-
-            {/* Dropdown Content */}
             <div className="absolute top-full left-0 right-0 mt-2 p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl z-50 origin-top animate-in fade-in slide-in-from-top-2">
               {FilterContent}
             </div>
           </details>
 
-          {/* Desktop Filter Sidebar (Hidden on Mobile) */}
           <div className="hidden lg:flex flex-col gap-6">
             <div className="flex items-center gap-2 px-1 text-zinc-800 dark:text-zinc-200">
               <Filter className="w-5 h-5 text-blue-600 dark:text-blue-500" />
@@ -169,7 +164,6 @@ export default async function Home({ searchParams }: homeProps) {
             {FilterContent}
           </div>
           
-          {/* Post Action Button (Sticky bottom on mobile, static on desktop) */}
           <div className="fixed bottom-6 left-0 right-0 px-4 sm:px-6 lg:static lg:px-0 lg:bottom-auto z-40">
             <Button
               className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-full lg:rounded-lg h-12 lg:h-10 transition-all active:scale-[0.98]"
@@ -183,8 +177,8 @@ export default async function Home({ searchParams }: homeProps) {
           </div>
         </aside>
 
-        {/* Main Feed Section */}
-        <main className="flex-1 w-full max-w-3xl lg:border-l border-zinc-200 dark:border-zinc-800/80 lg:pl-10 lg:pr-4 pb-24 lg:pb-8 z-10">
+        {/* Main Feed Section - Priority Width */}
+        <main className="flex-1 min-w-0 w-full lg:border-l lg:border-r border-zinc-200 dark:border-zinc-800/80 lg:px-2 xl:px-6 pb-24 lg:pb-8 z-10">
           <div className="w-full flex flex-col gap-5">
             {problems.length > 0 ? (
               problems.map(problem => (
@@ -211,6 +205,20 @@ export default async function Home({ searchParams }: homeProps) {
           </div>
         </main>
 
+        {/* Right Sidebar (Community Details) */}
+        <aside className="hidden lg:flex w-full lg:w-64 xl:w-72 flex-shrink-0 flex-col gap-6 lg:sticky lg:top-24 self-start z-20">
+          <div className="bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <Users className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+              <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">Community</h2>
+            </div>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Welcome to the Enquiry community. Help others by answering unsolved problems, or post your own questions to get assistance.
+            </p>
+            {/* Add more community stats or links here later */}
+          </div>
+        </aside>
+        
       </div>
     </div>
   );

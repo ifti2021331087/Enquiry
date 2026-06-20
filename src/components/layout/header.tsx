@@ -1,9 +1,26 @@
 "use client";
 
-import { MessageCircleQuestionMark, MenuIcon } from "lucide-react";
+import { 
+    MessageCircleQuestionMark, 
+    MenuIcon, 
+    Home, 
+    PlusCircle, 
+    UserIcon, 
+    Bell, 
+    LayoutDashboard, 
+    FileText, 
+    Users 
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { 
+    Sheet, 
+    SheetClose, 
+    SheetContent, 
+    SheetHeader, 
+    SheetTitle, 
+    SheetTrigger 
+} from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 import UserMenu from "../auth/user-menu";
 import { useSession } from "@/lib/auth-client";
@@ -15,7 +32,12 @@ export default function Header() {
     const isAdmin = user?.role === 'admin';
     const pathName = usePathname();
     const isAuthPage: boolean = (pathName === "/auth/signIn") || (pathName === "/auth/signUp");
-    if (isAuthPage) return null
+    
+    if (isAuthPage) return null;
+
+    // Helper to check if link is active
+    const isActive = (path: string) => pathName === path;
+
     return (
         <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background">
             <div className="container mx-auto h-16 flex items-center justify-between px-4">
@@ -24,9 +46,9 @@ export default function Header() {
                 <div className="flex items-center gap-2">
                     <Link href={"/"} className="flex gap-2 items-center">
                         <div className="rounded-md">
-                            <MessageCircleQuestionMark className="w-6 h-6 text-blue-500" />
+                            <MessageCircleQuestionMark className="w-6 h-6 text-blue-600 dark:text-blue-500" />
                         </div>
-                        <span className="font-bold text-xl text-blue-500 hover:text-blue-600">
+                        <span className="font-bold text-xl text-blue-600 dark:text-blue-500 hover:opacity-80 transition-opacity">
                             Enquiry
                         </span>
                     </Link>
@@ -37,16 +59,16 @@ export default function Header() {
                     {
                         !isPending && !isAdmin && (
                             <>
-                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Feed
                                 </Link>
-                                <Link href={"/ask"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/ask"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/ask') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Ask
                                 </Link>
-                                <Link href={"/profile"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/profile"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/profile') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Profile
                                 </Link>
-                                <Link href={"/notifications"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/notifications"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/notifications') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Notifications
                                 </Link>
                             </>
@@ -55,16 +77,16 @@ export default function Header() {
                     {
                         !isPending && isAdmin && (
                             <>
-                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Home
                                 </Link>
-                                <Link href={"/admin/dashboard"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/admin/dashboard"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/admin/dashboard') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Dashboard
                                 </Link>
-                                <Link href={"/admin/post"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/admin/post"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/admin/post') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Posts
                                 </Link>
-                                <Link href={"/admin/user"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
+                                <Link href={"/admin/user"} className={`font-medium text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-500 ${isActive('/admin/user') ? 'text-blue-600 dark:text-blue-500' : 'text-muted-foreground'}`}>
                                     Users
                                 </Link>
                             </>
@@ -88,47 +110,64 @@ export default function Header() {
                                     <span className="sr-only">Toggle Menu</span>
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[250px] sm:w-[300px]">
-                                <SheetHeader className="text-left border-b pb-4">
+                            <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col">
+                                <SheetHeader className="text-left border-b pb-4 mb-4">
                                     <SheetTitle className="flex items-center gap-2">
-                                        <MessageCircleQuestionMark className="w-5 h-5 text-blue-500" />
-                                        <span className="text-blue-500 font-bold">Enquiry</span>
+                                        <MessageCircleQuestionMark className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+                                        <span className="text-blue-600 dark:text-blue-500 font-bold tracking-wide">Enquiry</span>
                                     </SheetTitle>
                                 </SheetHeader>
-                                <nav className="flex flex-col gap-4 mt-6">
+                                
+                                <nav className="flex flex-col gap-2 flex-1">
                                     {
                                         !isPending && !isAdmin && (
                                             <>
-                                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Feed
-                                                </Link>
-                                                <Link href={"/ask"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Ask
-                                                </Link>
-                                                <Link href={"/profile"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Profile
-                                                </Link>
-                                                <Link href={"/notifications"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Notifications
-                                                </Link>
+                                                <SheetClose asChild>
+                                                    <Link href={"/"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <Home className="w-4 h-4" /> Feed
+                                                    </Link>
+                                                </SheetClose>
+                                                <SheetClose asChild>
+                                                    <Link href={"/ask"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/ask') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <PlusCircle className="w-4 h-4" /> Ask
+                                                    </Link>
+                                                </SheetClose>
+                                                <SheetClose asChild>
+                                                    <Link href={"/profile"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/profile') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <UserIcon className="w-4 h-4" /> Profile
+                                                    </Link>
+                                                </SheetClose>
+                                                <SheetClose asChild>
+                                                    <Link href={"/notifications"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/notifications') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <Bell className="w-4 h-4" /> Notifications
+                                                    </Link>
+                                                </SheetClose>
                                             </>
                                         )
                                     }
                                     {
                                         !isPending && isAdmin && (
                                             <>
-                                                <Link href={"/"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Home
-                                                </Link>
-                                                <Link href={"/admin/dashboard"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Dashboard
-                                                </Link>
-                                                <Link href={"/admin/post"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Posts
-                                                </Link>
-                                                <Link href={"/admin/user"} className="font-medium text-sm text-slate-600 hover:text-blue-600 transition-colors">
-                                                    Users
-                                                </Link>
+                                                <SheetClose asChild>
+                                                    <Link href={"/"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <Home className="w-4 h-4" /> Home
+                                                    </Link>
+                                                </SheetClose>
+                                                <SheetClose asChild>
+                                                    <Link href={"/admin/dashboard"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/admin/dashboard') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <LayoutDashboard className="w-4 h-4" /> Dashboard
+                                                    </Link>
+                                                </SheetClose>
+                                                <SheetClose asChild>
+                                                    <Link href={"/admin/post"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/admin/post') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <FileText className="w-4 h-4" /> Posts
+                                                    </Link>
+                                                </SheetClose>
+                                                <SheetClose asChild>
+                                                    <Link href={"/admin/user"} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isActive('/admin/user') ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                                                        <Users className="w-4 h-4" /> Users
+                                                    </Link>
+                                                </SheetClose>
                                             </>
                                         )
                                     }
