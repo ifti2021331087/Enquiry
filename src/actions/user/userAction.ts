@@ -54,7 +54,7 @@ export const createProblemAction = async (data: problemProps) => {
             if (problemCount >= 2) {
                 return {
                     success: false,
-                    error: "Free users can only ask 1 question per day. Upgrade to Premium for unlimited questions!"
+                    error: "Free users can only ask 2 question per day. Upgrade to Premium for unlimited questions!"
                 }
             }
         }
