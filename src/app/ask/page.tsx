@@ -11,14 +11,14 @@ export default function Ask() {
       <div className="max-w-7xl mx-auto pt-10 sm:pt-16 md:pt-20 pb-24 px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
-        <div className="flex flex-col items-center justify-center max-w-xl mx-auto text-center mb-10 sm:mb-16">
+        {/* <div className="flex flex-col items-center justify-center max-w-xl mx-auto text-center mb-10 sm:mb-16">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight mb-4">
             Post a Problem
           </h1>
           <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400">
             Describe your issue clearly — better questions get faster, more useful answers.
           </p>
-        </div>
+        </div> */}
         
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start relative">
