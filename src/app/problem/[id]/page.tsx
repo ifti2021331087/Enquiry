@@ -18,7 +18,7 @@ export default async function problemDetails({ params }: problemProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
         {/* Responsive Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
