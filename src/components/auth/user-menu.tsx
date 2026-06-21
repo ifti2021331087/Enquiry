@@ -57,7 +57,7 @@ export default function UserMenu() {
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link href="/pricing" className="flex items-center gap-2 w-full">
                 <DiamondPlus className="w-4 h-4" />
-                Upgrade
+                Upgrade plan
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

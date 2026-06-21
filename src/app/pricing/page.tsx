@@ -5,10 +5,10 @@ import CheckoutButton from "@/components/pricing/CheckoutButton";
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 font-sans selection:bg-blue-200 dark:selection:bg-blue-900 pb-24 mt-8">
+    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950 font-sans selection:bg-blue-200 dark:selection:bg-blue-900 pb-24 mt-2">
       
       {/* Header Section */}
-      <div className="max-w-3xl mx-auto pt-16 sm:pt-24 px-4 text-center mb-12 sm:mb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="max-w-3xl mx-auto pt-4 sm:pt-8 px-4 text-center mb-12 sm:mb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight mb-4">
           Unlock Unlimited Potential
         </h1>
