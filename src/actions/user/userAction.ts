@@ -3,7 +3,7 @@
 import { db } from "@/lib/db"
 import { notification, problem, problemLike, reply, user } from "@/lib/db/schema"
 import { auth } from "@/lib/utils/auth"
-import { and, arrayContains, count, desc, eq, exists, notExists, relations, sql } from "drizzle-orm";
+import { and, arrayContains, count, desc, eq, exists, gte, notExists, relations, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers"
 
@@ -28,6 +28,36 @@ export const createProblemAction = async (data: problemProps) => {
     }
 
     try {
+
+        const currentUser = await db.query.user.findFirst({
+            where: eq(user.id, session.user.id),
+            columns: { isPremium: true }
+        })
+        if (!currentUser) {
+            return {
+                success: false,
+                error: "User not found!"
+            }
+        }
+
+        if (!currentUser.isPremium) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const [{ problemCount }] = await db.select({ problemCount: count() })
+                .from(problem)
+                .where(and(
+                    eq(problem.userId, session.user.id),
+                    gte(problem.createdAt, today)
+                ))
+
+            if (problemCount >= 2) {
+                return {
+                    success: false,
+                    error: "Free users can only ask 1 question per day. Upgrade to Premium for unlimited questions!"
+                }
+            }
+        }
 
         await db.insert(problem).values({
             title: data.title,
@@ -442,15 +472,15 @@ export const getProfileDataAction = async (targetUserId: string) => {
             [repliesStat],
             [solvedStat],
             userProblems,
-            userReplies 
+            userReplies
         ] = await Promise.all([
             db.select({ value: count() }).from(problem).where(eq(problem.userId, targetUserId)),
 
             db.select({ value: count() }).from(reply).where(eq(reply.userId, targetUserId)),
 
             db.select({ value: count() })
-              .from(reply)
-              .where(and(eq(reply.userId, targetUserId), eq(reply.isApproved, true))),
+                .from(reply)
+                .where(and(eq(reply.userId, targetUserId), eq(reply.isApproved, true))),
 
             db.query.problem.findMany({
                 where: eq(problem.userId, targetUserId),
@@ -487,7 +517,7 @@ export const getProfileDataAction = async (targetUserId: string) => {
                     problemsCount: problemsStat.value,
                     repliesCount: repliesStat.value,
                     solvedCount: solvedStat.value,
-                    reputation: (solvedStat.value * 15) + (repliesStat.value * 2) 
+                    reputation: (solvedStat.value * 15) + (repliesStat.value * 2)
                 },
 
                 problems: userProblems.map(p => ({

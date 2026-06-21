@@ -4,7 +4,7 @@ import React from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { BadgeCheckIcon, BellIcon, CreditCardIcon, LogOutIcon } from 'lucide-react'
+import { BadgeCheckIcon, BellIcon, CreditCardIcon, DiamondPlus, LogOutIcon } from 'lucide-react'
 import { signOut, useSession } from '@/lib/auth-client'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -53,6 +53,12 @@ export default function UserMenu() {
             <DropdownMenuItem className="gap-2 cursor-pointer">
               <BadgeCheckIcon className="w-4 h-4" />
               {session?.user?.name}
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link href="/pricing" className="flex items-center gap-2 w-full">
+                <DiamondPlus className="w-4 h-4" />
+                Upgrade
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-red-600 focus:text-red-600">

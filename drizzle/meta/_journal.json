@@ -50,6 +50,13 @@
       "when": 1781422109605,
       "tag": "0006_black_sinister_six",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782041449297,
+      "tag": "0007_little_lester",
+      "breakpoints": true
     }
   ]
 }

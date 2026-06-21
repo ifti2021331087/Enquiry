@@ -16,6 +16,8 @@ export const user = pgTable("user", {
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  isPremium:boolean("is_premium").default(false).notNull(),
+  stripeCustomerId:text("stripe_customer_id")
 });
 
 export const session = pgTable(
