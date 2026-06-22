@@ -68,6 +68,7 @@ export const createProblemAction = async (data: problemProps) => {
         })
 
         revalidatePath("/ask");
+        revalidatePath("/");
 
         return {
             success: true
