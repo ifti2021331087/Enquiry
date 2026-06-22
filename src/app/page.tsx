@@ -122,9 +122,9 @@ export default async function Home({ searchParams }: homeProps) {
                       {topic.name}
                     </span>
                   </div>
-                  <span className={`flex text-[11px] font-semibold px-2 py-0.5 rounded-full ${isChecked ? 'bg-blue-100 text-blue-700 dark:bg-blue-800/60 dark:text-blue-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>
+                  {/* <span className={`flex text-[11px] font-semibold px-2 py-0.5 rounded-full ${isChecked ? 'bg-blue-100 text-blue-700 dark:bg-blue-800/60 dark:text-blue-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>
                     {topic.count}
-                  </span>
+                  </span> */}
                 </Link>
               </li>
             )
@@ -178,7 +178,7 @@ export default async function Home({ searchParams }: homeProps) {
         </aside>
 
         {/* Main Feed Section - Priority Width */}
-        <main className="flex-1 min-w-0 w-full lg:border-l lg:border-r border-zinc-200 dark:border-zinc-800/80 lg:px-2 xl:px-6 pb-24 lg:pb-8 z-10">
+        <main className="flex-1 min-w-0 w-full lg:border-l lg:border-r border-zinc-200 dark:border-zinc-800/80 lg:px-2 xl:px-4 pb-24 lg:pb-8 z-10">
           <div className="w-full flex flex-col gap-5">
             {problems.length > 0 ? (
               problems.map(problem => (
