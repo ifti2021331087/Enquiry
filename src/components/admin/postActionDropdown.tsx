@@ -37,9 +37,9 @@ export default function PostActionsDropdown({ problemId }: { problemId: string }
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40 rounded-lg">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        {/* <DropdownMenuItem>Edit</DropdownMenuItem>
         <DropdownMenuItem>Duplicate</DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
         {/* onClick is perfectly safe here! */}
         <DropdownMenuItem variant="destructive" onClick={handleDelete} disabled={isPending}>
           {isPending ? "Deleting..." : "Delete"}
