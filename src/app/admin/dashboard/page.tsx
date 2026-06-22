@@ -14,12 +14,12 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllProblemAction } from "@/actions/user/userAction";
-import { getAdminAllProblemsAction, getAllUserAction } from "@/actions/admin/adminAction";
+import { getAdminAllProblemsAction, getAllUserAction, getSolveRateAction } from "@/actions/admin/adminAction";
 
 export default async function AdminDashboard() {
     const posts = await getAdminAllProblemsAction();
     const users = await getAllUserAction();
-
+    const rate=await getSolveRateAction();
     // Get current date for the dashboard header
     const currentDate = new Intl.DateTimeFormat('en-US', { 
         weekday: 'long', 
@@ -140,74 +140,12 @@ export default async function AdminDashboard() {
                         <CardContent className="relative z-10">
                             {/* TO-DO: Replace with dynamic calculation if available */}
                             <div className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
-                                60.7%
+                                {rate.data?.solvedRate}%
                             </div>
                             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 font-medium flex items-center gap-1">
                                 <TrendingUp className="w-3 h-3 text-emerald-500" />
                                 Problems successfully resolved
                             </p>
-                        </CardContent>
-                    </Card>
-
-                </section>
-
-                {/* Decorative Lower Section */}
-                <section className="mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-500">
-                    
-                    {/* Quick Actions / Activity Placeholder */}
-                    <Card className="bg-white dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 shadow-sm">
-                        <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/80 pb-4">
-                            <CardTitle className="text-base font-bold flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-blue-500" />
-                                Quick Actions & Activity
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6 flex flex-col gap-4">
-                            <Button variant="outline" className="w-full justify-between h-12 rounded-xl group hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 border-zinc-200 dark:border-zinc-800">
-                                <span className="font-semibold">Review Pending Users</span>
-                                <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-blue-500 transition-transform group-hover:translate-x-1" />
-                            </Button>
-                            <Button variant="outline" className="w-full justify-between h-12 rounded-xl group hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 border-zinc-200 dark:border-zinc-800">
-                                <span className="font-semibold">Manage Content Reports</span>
-                                <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-blue-500 transition-transform group-hover:translate-x-1" />
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* System Status Placeholder */}
-                    <Card className="bg-zinc-900 dark:bg-black border-zinc-800 text-white shadow-sm overflow-hidden relative">
-                        <div className="absolute top-0 right-0 p-32 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-                        <CardHeader className="border-b border-zinc-800 pb-4 relative z-10">
-                            <CardTitle className="text-base font-bold flex items-center gap-2 text-zinc-100">
-                                <Settings className="w-5 h-5 text-zinc-400" />
-                                System Health
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6 relative z-10">
-                            <div className="flex flex-col gap-5">
-                                <div>
-                                    <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-zinc-400 font-medium">Database Load</span>
-                                        <span className="text-emerald-400 font-bold">12%</span>
-                                    </div>
-                                    <div className="w-full bg-zinc-800 rounded-full h-2">
-                                        <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '12%' }}></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-zinc-400 font-medium">Storage Capacity</span>
-                                        <span className="text-blue-400 font-bold">45%</span>
-                                    </div>
-                                    <div className="w-full bg-zinc-800 rounded-full h-2">
-                                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: '45%' }}></div>
-                                    </div>
-                                </div>
-                                <div className="mt-2 text-xs text-zinc-500 flex items-center gap-1.5">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                    All systems operational
-                                </div>
-                            </div>
                         </CardContent>
                     </Card>
 

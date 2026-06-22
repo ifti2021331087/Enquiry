@@ -1,81 +1,3 @@
-
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table"
-// import { getAdminUsersAction } from "@/actions/admin/adminAction"
-// import PostActionsDropdown from "@/components/admin/postActionDropdown"
-// import { Badge } from "@/components/ui/badge";
-
-// export default async function AdminPostList() {
-//   const users = await getAdminUsersAction();
-
-//   const dateFormatter = new Intl.DateTimeFormat("en-US", {
-//     month: "short",
-//     day: "numeric", 
-//     year: "numeric",
-//   });
-  
-//   return (
-//     <div className="w-full mx-auto rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
-//       <Table className="w-full">
-//         <TableHeader className="bg-zinc-50/50 dark:bg-zinc-900/20">
-//           <TableRow className="hover:bg-transparent">
-//             <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">User</TableHead>
-//             <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Role</TableHead>
-//             <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Posts</TableHead>
-//             <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Joined</TableHead>
-//             <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Status</TableHead>
-//             <TableHead className="py-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right">Actions</TableHead>
-//           </TableRow>
-//         </TableHeader>
-//         <TableBody>
-//           {users &&
-//             users.map((user) => {
-//               const formattedDate = user.joined
-//                 ? dateFormatter.format(new Date(user.joined)) 
-//                 : "N/A";
-
-//               return (
-//                 <TableRow 
-//                   key={user.id} 
-//                   className="transition-colors hover:bg-zinc-50/80 dark:hover:bg-zinc-900/50"
-//                 >
-//                   <TableCell className="font-medium text-zinc-900 dark:text-zinc-100 py-4">
-//                     {user.name}
-//                   </TableCell>
-//                   <TableCell className="text-zinc-600 dark:text-zinc-400">
-//                     {user.role || "Unknown"}
-//                   </TableCell>     
-//                   <TableCell>
-//                     <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
-//                       {user.posts}
-//                     </span>
-//                   </TableCell>        
-//                   <TableCell className="text-sm text-zinc-500 dark:text-zinc-400">
-//                     {formattedDate}
-//                   </TableCell> 
-//                   <TableCell className="text-sm text-zinc-500 dark:text-zinc-400">
-//                     <Badge>{!user.status?"active":"banned"}</Badge>
-//                   </TableCell> 
-                  
-//                   <TableCell className="text-right">
-//                     {/* <PostActionsDropdown problemId={user.id}></PostActionsDropdown> */}
-//                   </TableCell>
-//                 </TableRow>
-//               );
-//             })}
-//         </TableBody>
-//       </Table>
-//     </div>
-//   )
-// }
-
-
 import {
   Table,
   TableBody,
@@ -126,16 +48,18 @@ export default async function AdminPostList() {
       </div>
 
       {/* Table Card */}
-      <div className="w-full rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table className="w-full text-sm">
+      <div className="w-full rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 overflow-hidden flex flex-col">
+        {/* The overflow-x-auto wrapper ensures horizontal scrolling on small screens */}
+        <div className="overflow-x-auto pb-2 sm:pb-0 custom-scrollbar">
+          <Table className="w-full text-sm min-w-[700px]">
             <TableHeader className="bg-zinc-50/80 dark:bg-zinc-900/40 border-b border-zinc-200 dark:border-zinc-800">
               <TableRow className="hover:bg-transparent">
-                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Post Title</TableHead>
-                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Author</TableHead>
-                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-center">Replies</TableHead>
-                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Posted</TableHead>
-                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right">Actions</TableHead>
+                {/* Added whitespace-nowrap to headers so they never break into two lines */}
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 whitespace-nowrap">Post Title</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 whitespace-nowrap">Author</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-center whitespace-nowrap">Replies</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 whitespace-nowrap">Posted</TableHead>
+                <TableHead className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -149,7 +73,8 @@ export default async function AdminPostList() {
                     key={problem.id} 
                     className="transition-colors hover:bg-blue-50/50 dark:hover:bg-blue-900/10 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0"
                   >
-                    <TableCell className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-100 max-w-[200px] sm:max-w-[300px] lg:max-w-[400px] truncate">
+                    {/* Added min-w to the title so it doesn't crush on mobile, but still truncates nicely */}
+                    <TableCell className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-100 min-w-[250px] max-w-[250px] sm:max-w-[300px] lg:max-w-[400px] truncate">
                       {problem.title}
                     </TableCell>
                     <TableCell className="px-6 py-4 text-zinc-600 dark:text-zinc-400 font-medium whitespace-nowrap">
