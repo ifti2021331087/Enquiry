@@ -58,38 +58,38 @@ export const getSolveRateAction = async () => {
         ] = await Promise.all([
             await db.select({ value: count() }).from(problem),
             await db.select({ value: count() }).from(problem)
-            .innerJoin(reply, 
-                and(
-                    eq(reply.problemId,problem.id),
-                    eq(reply.isApproved,true)
+                .innerJoin(reply,
+                    and(
+                        eq(reply.problemId, problem.id),
+                        eq(reply.isApproved, true)
+                    )
                 )
-            )
         ])
 
-        const problemCount=totalProblem.value;
-        const solvedCount=solvedProblem.value;
+        const problemCount = totalProblem.value;
+        const solvedCount = solvedProblem.value;
 
-        if(problemCount==0){
+        if (problemCount == 0) {
             return {
-                success:false,
-                data:{solvedRate:0}
+                success: false,
+                data: { solvedRate: 0 }
             }
         }
 
-        const rate=(solvedCount/problemCount)*100;
-        const formatedRate=Math.round(rate*10)/10;
+        const rate = (solvedCount / problemCount) * 100;
+        const formatedRate = Math.round(rate * 10) / 10;
         return {
-            success:true,
-            data:{
-                solvedRate:formatedRate
+            success: true,
+            data: {
+                solvedRate: formatedRate
             }
         }
     }
-    catch(e){
+    catch (e) {
         console.log(e);
-        return{
-            success:false,
-            error:"Failed to get the solved rate."
+        return {
+            success: false,
+            error: "Failed to get the solved rate."
         }
     }
 
@@ -136,6 +136,10 @@ export const deleteProblemByIdAction = async (problemId: string) => {
         throw new Error("You must be logged in and admin to get all problems");
     }
 
+    if (session?.user.email === "admin@test.com") {
+        return { success: true, message: "Demo Mode: Post deletion simulated successfully!" };
+    }
+
     try {
         await db.delete(problem).where(eq(problem.id, problemId));
 
@@ -143,6 +147,7 @@ export const deleteProblemByIdAction = async (problemId: string) => {
         revalidatePath("/");
         return {
             success: true,
+            message:"Post deleted successfully."
         }
     }
     catch (e) {
@@ -168,6 +173,7 @@ export const getAdminUsersAction = async () => {
         const result = await db.select({
             id: user.id,
             name: user.name,
+            email: user.email,
             role: user.role,
             posts: sql<number>`count(${problem.id})`.mapWith(Number),
             joined: user.createdAt,
@@ -195,6 +201,9 @@ export const banUserByIdAction = async (targetUserId: string) => {
     if (!userSession?.user.id && userSession?.user.role === 'admin') {
         throw new Error("You must be logged in and admin to ban a user");
     }
+    if (userSession?.user.email === "admin@test.com") {
+        return { success: true, message: "Demo Mode: User ban simulated successfully!" };
+    }
 
     try {
         await db.update(user).set({ banned: true }).where(eq(user.id, targetUserId));
@@ -202,6 +211,7 @@ export const banUserByIdAction = async (targetUserId: string) => {
         revalidatePath("/admin/user")
         return {
             success: true,
+            message:"User banned successfully"
         }
     }
     catch (e) {
@@ -221,6 +231,10 @@ export const unBanUserByIdAction = async (targetUserId: string) => {
         throw new Error("You must be logged in and admin to unban a user");
     }
 
+    if (userSession?.user.email === "admin@test.com") {
+        return { success: true, message: "Demo Mode: User ban simulated successfully!" };
+    }
+
     try {
         await db.update(user).set({
             banned: false,
@@ -231,6 +245,7 @@ export const unBanUserByIdAction = async (targetUserId: string) => {
         revalidatePath("/admin/user")
         return {
             success: true,
+            message:"User unbanned successfully"
         }
     }
     catch (e) {
@@ -250,12 +265,17 @@ export const deleteUserByIdAction = async (userId: string) => {
         throw new Error("You must be logged in and admin to delete a user");
     }
 
+    if (userSession?.user.email === "admin@test.com") {
+        return { success: true, message: "Demo Mode: User deletion simulated successfully!" };
+    }
+
     try {
         await db.delete(user).where(eq(user.id, userId));
 
         revalidatePath("/admin/user");
         return {
-            success: true
+            success: true,
+            message:"User deleted successfully"
         }
     }
     catch (e) {

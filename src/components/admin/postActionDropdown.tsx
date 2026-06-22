@@ -21,7 +21,7 @@ export default function PostActionsDropdown({ problemId }: { problemId: string }
     startTransition(async () => {
       const result = await deleteProblemByIdAction(problemId);
       if (result.success) {
-        toast.success("Problem has been deleted");
+        toast.success(result.message);
       } else {
         toast.error("Something went wrong while deleting the problem!!");
       }

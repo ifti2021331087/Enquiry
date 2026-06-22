@@ -28,6 +28,7 @@ export const config = {
     '/problem/:path*',
     '/notifications/:path*',
     '/profile/:path*',
-    '/admin/:path*'
+    '/admin/:path*',
+    '/pricing/:path*'
   ],
 };

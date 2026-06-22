@@ -19,7 +19,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string()
     .min(6, "Password must be at least 6 characters long")
-    .max(10, "Password must be at max 12 characters long"),
+    .max(12, "Password must be at max 12 characters long"),
   confirmPassword: z.string()
     .min(6, "Password must be at least 6 characters long")
     .max(10, "Password must be at max 12 characters long")
@@ -86,7 +86,7 @@ export default function SignUpForm() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="form-name">
-                    Email
+                    Name
                   </FieldLabel>
                   <Input
                     {...field}

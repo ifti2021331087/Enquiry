@@ -71,6 +71,17 @@ export default function SignInForm() {
       // disableRedirect: true,
     });
   }
+  const handleTestLogin = (role: 'admin' | 'user') => {
+    const email = role === 'admin' ? "admin@test.com" : "user@test.com";
+    const password = "test1234";
+
+    // Auto-fill the form so the interviewer sees what is happening
+    form.setValue("email", email);
+    form.setValue("password", password);
+
+    // Automatically submit the credentials
+    onSubmit({ email, password });
+  };
 
   return (
     <Card className="w-full sm:max-w-sm">
@@ -134,6 +145,26 @@ export default function SignInForm() {
         </div>
         <div className="pt-2 text-center">
           New register, please <Link href={"/auth/signUp"}><span className="text-blue-600 hover:cursor-pointer underline">Sign Up </span></Link>here
+        </div>
+        <div className="flex  flex-col w-full gap-2 mt-3">
+          <Button
+            variant="outline"
+            className="w-full text-xs"
+            onClick={() => handleTestLogin('user')}
+            disabled={isLoading}
+            type="button"
+          >
+            Test User
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full text-xs"
+            onClick={() => handleTestLogin('admin')}
+            disabled={isLoading}
+            type="button"
+          >
+            Test Admin
+          </Button>
         </div>
       </CardContent>
       <FieldSeparator className="w-1/2 mx-auto"></FieldSeparator>

@@ -11,25 +11,30 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { banUserByIdAction, deleteUserByIdAction, unBanUserByIdAction } from "@/actions/admin/adminAction"
 import { toast } from "sonner"
-import {useTransition } from "react"
+import { useTransition } from "react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 
 interface userProps {
     userId: string,
     banned: boolean | null,
+    email: string
 }
 
-export default function UserActionsDropdown({ userId, banned }: userProps) {
+export default function UserActionsDropdown({ userId, banned, email }: userProps) {
 
     const [isPendingBan, startTransitionBan] = useTransition();
     const [isPendingDelete, startTransitionDelete] = useTransition();
     const handleBan = async () => {
         startTransitionBan(async () => {
             // console.log(banned);
+            if (email === "admin@test.com") {
+                toast.success("Demo Mode: User ban simulated successfully!");
+                return;
+            }
             if (banned) {
                 const result = await unBanUserByIdAction(userId);
                 if (result.success) {
-                    toast.success("User successfully Unbanned");
+                    toast.success(result.message);
                 }
                 else {
                     toast.error("Something went wrong while Unbanning the user.")
@@ -38,7 +43,7 @@ export default function UserActionsDropdown({ userId, banned }: userProps) {
             else {
                 const result = await banUserByIdAction(userId);
                 if (result.success) {
-                    toast.success("User successfully banned");
+                    toast.success(result.message);
                 }
                 else {
                     toast.error("Something went wrong while banning the user.")
@@ -46,15 +51,15 @@ export default function UserActionsDropdown({ userId, banned }: userProps) {
             }
         })
     }
-    const handleDelete=async()=>{
+    const handleDelete = async () => {
         console.log("user deleted button");
-        startTransitionDelete(async()=>{
-            const result=await deleteUserByIdAction(userId);
+        startTransitionDelete(async () => {
+            const result = await deleteUserByIdAction(userId);
 
-            if(result.success){
-                toast.success("User deleted successfully");
+            if (result.success) {
+                toast.success(result.message);
             }
-            else{
+            else {
                 toast.error("Something went wrong while deleting the user");
             }
         })
@@ -72,16 +77,16 @@ export default function UserActionsDropdown({ userId, banned }: userProps) {
                 <DropdownMenuItem onClick={handleBan} disabled={isPendingBan}>
                     {
                         banned ? (isPendingBan ? "Unbanning..." : "Unban")
-                            : (isPendingBan? "Banning..." : "Ban")
+                            : (isPendingBan ? "Banning..." : "Ban")
                     }
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {/* onClick is perfectly safe here! */}
-                <DropdownMenuItem onSelect={(e)=>e.preventDefault()}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="destructive" disabled={isPendingDelete}>
-                                {isPendingDelete?"Deleting...":"Delete user"}
+                                {isPendingDelete ? "Deleting..." : "Delete user"}
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent size="sm">
@@ -97,7 +102,7 @@ export default function UserActionsDropdown({ userId, banned }: userProps) {
                             <AlertDialogFooter>
                                 <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
                                 <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isPendingDelete}>
-                                    {isPendingDelete?"Deleting...":"Delete"}
+                                    {isPendingDelete ? "Deleting..." : "Delete"}
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
